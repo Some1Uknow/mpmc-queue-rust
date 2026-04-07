@@ -61,11 +61,11 @@ flowchart TB
 
 ## Files
 
-- `src/lib.rs`: queue trait
-- `src/mutex_condvar.rs`: queue implementation
-- `tests/`: correctness and contention tests
-- `src/bin/throughput.rs`: benchmark runner
-- `results/`: benchmark outputs
+- [`src/lib.rs`](src/lib.rs): queue trait
+- [`src/mutex_condvar.rs`](src/mutex_condvar.rs): queue implementation
+- [`tests/`](tests/): correctness and contention tests
+- [`src/bin/throughput.rs`](src/bin/throughput.rs): benchmark runner
+- [`benchmarks/`](benchmarks/): benchmark outputs
 
 ## Tests
 
@@ -116,9 +116,9 @@ Why this benchmark style was used:
 
 Release benchmark results are stored in:
 
-- `src/bin/throughput.rs`
-- `results/benchmark_results.csv`
-- `results/benchmark_results.md`
+- [`src/bin/throughput.rs`](src/bin/throughput.rs)
+- [`benchmarks/benchmark_results.csv`](benchmarks/benchmark_results.csv)
+- [`benchmarks/benchmark_results.md`](benchmarks/benchmark_results.md)
 
 Some headline numbers:
 
