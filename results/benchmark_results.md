@@ -1,0 +1,50 @@
+# Benchmark Results
+
+Generated: 2026-04-07 16:49:55 IST
+
+Command:
+
+```bash
+cargo run --release --bin throughput
+```
+
+Toolchain:
+
+- `rustc 1.93.1 (01f6ddf75 2026-02-11)`
+- `cargo 1.93.1 (083ac5135 2025-12-15)`
+
+Environment notes:
+
+- CPU model and core-count probes were blocked by the sandbox in this environment.
+- `throughput_ops_per_sec` is reported as `(push_ops + pop_ops) / measured_secs`.
+- `measured_secs` is the steady-state measurement window.
+- `total_wall_secs` includes shutdown and drain time after measurement stops.
+
+## Full Results
+
+| queue | scenario | producers | consumers | capacity | measured_secs | total_wall_secs | push_ops | pop_ops | throughput_ops_per_sec |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| mutex_condvar | p1_c1_cap64 | 1 | 1 | 64 | 3.000 | 3.005 | 65867843 | 65867779 | 43911874.00 |
+| mutex_condvar | p2_c2_cap64 | 2 | 2 | 64 | 3.000 | 3.001 | 25574339 | 25574277 | 17049538.67 |
+| mutex_condvar | p4_c4_cap64 | 4 | 4 | 64 | 3.000 | 3.005 | 9547648 | 9547583 | 6365077.00 |
+| mutex_condvar | p8_c8_cap64 | 8 | 8 | 64 | 3.000 | 3.005 | 6404855 | 6404855 | 4269903.33 |
+| mutex_condvar | p16_c16_cap64 | 16 | 16 | 64 | 3.000 | 3.005 | 5878768 | 5878703 | 3919157.00 |
+| mutex_condvar | p1_c1_cap256 | 1 | 1 | 256 | 3.000 | 3.005 | 96077734 | 96077542 | 64051758.67 |
+| mutex_condvar | p2_c2_cap256 | 2 | 2 | 256 | 3.000 | 3.005 | 50931990 | 50931836 | 33954608.67 |
+| mutex_condvar | p4_c4_cap256 | 4 | 4 | 256 | 3.000 | 3.005 | 24913461 | 24913267 | 16608909.33 |
+| mutex_condvar | p8_c8_cap256 | 8 | 8 | 256 | 3.000 | 3.005 | 18743954 | 18743698 | 12495884.00 |
+| mutex_condvar | p16_c16_cap256 | 16 | 16 | 256 | 3.000 | 3.005 | 17412009 | 17412012 | 11608007.00 |
+| mutex_condvar | p1_c1_cap1024 | 1 | 1 | 1024 | 3.000 | 3.005 | 108508062 | 108507038 | 72338366.67 |
+| mutex_condvar | p2_c2_cap1024 | 2 | 2 | 1024 | 3.000 | 3.005 | 78005105 | 78004906 | 52003337.00 |
+| mutex_condvar | p4_c4_cap1024 | 4 | 4 | 1024 | 3.000 | 3.005 | 44092224 | 44092222 | 29394815.33 |
+| mutex_condvar | p8_c8_cap1024 | 8 | 8 | 1024 | 3.000 | 3.005 | 38724662 | 38723638 | 25816100.00 |
+| mutex_condvar | p16_c16_cap1024 | 16 | 16 | 1024 | 3.000 | 3.005 | 29052731 | 29051708 | 19368146.33 |
+| mutex_condvar | p8_c2_cap256 | 8 | 2 | 256 | 3.000 | 3.005 | 11783696 | 11783440 | 7855712.00 |
+| mutex_condvar | p2_c8_cap256 | 2 | 8 | 256 | 3.000 | 3.005 | 11526308 | 11526291 | 7684199.67 |
+
+## Quick Read
+
+- Larger capacities improved throughput consistently for this mutex-based queue, especially as thread counts increased.
+- Symmetric producer/consumer pairs slowed down as contention rose, which is expected with a single shared mutex.
+- The asymmetric `8 producers / 2 consumers` and `2 producers / 8 consumers` scenarios both underperformed the balanced `4 / 4` and `8 / 8` cases at the same capacity because one side became the bottleneck.
+- `push_ops` and `pop_ops` stayed very close in every run, which is a healthy sign that shutdown and drain logic are not distorting the measured counts materially.
